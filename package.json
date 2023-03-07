@@ -1,0 +1,74 @@
+{
+  "name": "hd-training",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "start:dev": "nodemon src/index.ts",
+    "typeorm": "typeorm-ts-node-commonjs -d src/core/database.ts",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:show": "npm run typeorm -- migration:show",
+    "migration:generate": "npm run typeorm -- migration:generate -p",
+    "migration:create": "typeorm-ts-node-commonjs migration:create",
+    "schema:drop": "npm run typeorm -- schema:drop",
+    "format": "prettier 'src/**/*.ts' --write",
+    "lint": "eslint src --fix",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run lint",
+      "npm run format"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@hd.github.com:thanhtran-hd/hd-training.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-core": "^3.12.0",
+    "apollo-server-express": "^3.12.0",
+    "bcrypt": "^5.1.0",
+    "class-validator": "^0.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "graphql": "^15.8.0",
+    "handlebars": "^4.7.7",
+    "http-errors": "^2.0.0",
+    "joi": "^17.7.1",
+    "jsonwebtoken": "^9.0.0",
+    "mysql2": "^3.1.2",
+    "nodemailer": "^6.9.1",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.9.1",
+    "type-graphql": "^1.1.1",
+    "typeorm": "^0.3.12",
+    "typeorm-naming-strategies": "^4.1.0",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/http-errors": "^2.0.1",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^18.13.0",
+    "@types/nodemailer": "^6.4.7",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5"
+  }
+}
