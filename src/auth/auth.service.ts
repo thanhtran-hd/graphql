@@ -1,18 +1,16 @@
-import { BadRequest, Unauthorized } from 'http-errors';
 import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.schema';
 import { ROUNDS_NUMBER } from '../core/constant';
 import { Config } from '../core/config';
 import { LoginInput, LoginResponse, RegisterInput } from './auth.schema';
-import { logger } from '../core/utils/logger.util';
 import { signJwt } from '../core/utils/jwt';
+import { BadRequest, Unauthorized } from '../core/utils/errors.util';
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(User);
 
   async register(registerInput: RegisterInput): Promise<User> {
-    logger.info(JSON.stringify(registerInput));
     const duplicatedUser = await this.userRepo.findOneBy({
       email: registerInput.email,
     });

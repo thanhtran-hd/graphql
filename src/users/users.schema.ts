@@ -1,7 +1,8 @@
-import { Max, Min } from 'class-validator';
-import { ArgsType, Field, Int, ObjectType } from 'type-graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ArgsType, Field, ObjectType } from 'type-graphql';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Roles } from '../core/enum';
+import { PaginationArgs } from '../core/utils/pagination';
+import { Voucher } from '../vouchers/vouchers.schema';
 
 @ObjectType()
 @Entity('users')
@@ -25,19 +26,14 @@ export class User {
   @Column()
   fullname: string;
 
-  @Field()
+  @Field((_type) => Roles)
   @Column({ type: 'enum', enum: Roles, default: Roles.AUTHOR })
   role: Roles;
+
+  @Field((_type) => [Voucher])
+  @OneToMany(() => Voucher, (voucher) => voucher.user)
+  vouchers: Relation<Voucher>[];
 }
 
 @ArgsType()
-export class UsersArgs {
-  @Field((_type) => Int)
-  @Min(0)
-  skip: number;
-
-  @Field((_type) => Int)
-  @Min(1)
-  @Max(50)
-  take: 25;
-}
+export class UsersArgs extends PaginationArgs {}
