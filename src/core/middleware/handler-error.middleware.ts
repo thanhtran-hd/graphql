@@ -1,15 +1,14 @@
+import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-core';
 import { MiddlewareFn } from 'type-graphql';
-import { BadRequest, InternalServerError, OutOfStock, Unauthorized } from '../utils/errors.util';
 import { logger } from '../utils/logger.util';
 
-export const HandlerError: MiddlewareFn = async (_context, next) => {
+export const ErrorInterceptor: MiddlewareFn = async (_context, next) => {
   try {
     await next();
   } catch (err) {
-    if (err instanceof (BadRequest || OutOfStock || Unauthorized)) {
-      throw err;
+    if (!(err instanceof UserInputError || err instanceof AuthenticationError || err instanceof ForbiddenError)) {
+      logger.error(err);
     }
-    logger.error(err);
-    throw new InternalServerError('Internal Server Error');
+    throw err;
   }
 };

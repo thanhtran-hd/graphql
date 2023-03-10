@@ -108,4 +108,25 @@ export class Config {
   static get COOKIE_ACCESSTOKEN_MAX_AGE(): number {
     return parseInt((process.env.COOKIE_ACCESSTOKEN_MAX_AGE || '123') as string, 10);
   }
+
+  static get BULLMQ_QUEUES() {
+    const queues = (process.env.BULLMQ_QUEUES || ('' as string)).split('|');
+    return queues;
+  }
+
+  static get REDIS_HOST() {
+    return (process.env.REDIS_HOST || 'localhost') as string;
+  }
+
+  static get REDIS_PORT() {
+    return parseInt((process.env.REDIS_PORT || 6379) as string, 10);
+  }
+
+  static get REDIS_DB() {
+    return parseInt((process.env.REDIS_DB || 0) as string, 10);
+  }
+
+  static get REDIS_CACHE_URI() {
+    return (process.env.REDIS_CACHE_URI || 'redis://user:pass@localhost:6379') as string;
+  }
 }

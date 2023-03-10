@@ -2,6 +2,7 @@ import { ArgsType, Field, ObjectType } from 'type-graphql';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Roles } from '../core/enum';
 import { PaginationArgs } from '../core/utils/pagination';
+import { Editor } from '../events/events.schema';
 import { Voucher } from '../vouchers/vouchers.schema';
 
 @ObjectType()
@@ -32,7 +33,11 @@ export class User {
 
   @Field((_type) => [Voucher])
   @OneToMany(() => Voucher, (voucher) => voucher.user)
-  vouchers: Relation<Voucher>[];
+  vouchers: Relation<Voucher[]>;
+
+  @Field((_type) => Editor)
+  @OneToMany(() => Editor, (editor) => editor.event)
+  editor: Promise<Editor>;
 }
 
 @ArgsType()

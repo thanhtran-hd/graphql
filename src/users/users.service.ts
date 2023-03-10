@@ -1,4 +1,4 @@
-import { AppDataSource } from '../core/database';
+import { AppDataSource } from '../core/connection/database';
 import { Voucher } from '../vouchers/vouchers.schema';
 import { User, UsersArgs } from './users.schema';
 

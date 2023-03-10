@@ -1,17 +1,17 @@
-import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from 'type-graphql';
-import { HandlerError } from '../core/middleware/handler-error.middleware';
-import { Voucher } from '../vouchers/vouchers.schema';
-import { CreateEventInput, Event, EventsArgs } from './events.schema';
+import { Arg, Args, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { Context } from '../types/context';
+import { CreateEventInput, Editor, EditorInput, Event, EventsArgs } from './events.schema';
 import { EventService } from './events.service';
 
 @Resolver((_return) => Event)
 export class EventResolver {
-  constructor(private eventService: EventService) {
+  private eventService: EventService;
+
+  constructor() {
     this.eventService = new EventService();
   }
 
   @Mutation((_return) => Event)
-  @UseMiddleware(HandlerError)
   async createEvent(@Arg('input') input: CreateEventInput) {
     const newEvent = await this.eventService.create(input);
     return newEvent;
@@ -19,22 +19,36 @@ export class EventResolver {
 
   @Authorized()
   @Query((_return) => [Event])
-  @UseMiddleware(HandlerError)
   async events(@Args() args: EventsArgs) {
     const events = await this.eventService.getEvent(args);
     return events;
   }
 }
 
-@Resolver((_of) => Voucher)
-export class VouchersOfEvent {
-  constructor(private eventService: EventService) {
+@Resolver((_type) => Editor)
+export class EditorResolver {
+  private eventService: EventService;
+
+  constructor() {
     this.eventService = new EventService();
   }
 
-  @FieldResolver()
-  async event(@Root() voucher: Voucher) {
-    const vouchers = await this.eventService.getEventField(voucher);
-    return vouchers;
+  @Mutation((_return) => Editor)
+  async edit(@Arg('input') input: EditorInput, @Ctx() context: Context) {
+    const editor = await this.eventService.edit(input, context.user);
+
+    return editor;
+  }
+
+  @Mutation((_return) => String)
+  async release(@Arg('input') input: EditorInput, @Ctx() context: Context) {
+    await this.eventService.release(input, context.user);
+    return 'Success';
+  }
+
+  @Mutation((_return) => String)
+  async maintain(@Arg('input') input: EditorInput, @Ctx() context: Context) {
+    await this.eventService.maintain(input, context.user);
+    return 'Success';
   }
 }

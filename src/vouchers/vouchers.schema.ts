@@ -25,7 +25,7 @@ export class Voucher {
 
   @Field((_type) => Event)
   @ManyToOne(() => Event, (event) => event.vouchers)
-  event: Relation<Event>;
+  event: Promise<Event>;
 
   @Column({ nullable: true })
   userId: number;

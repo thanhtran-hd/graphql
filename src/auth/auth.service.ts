@@ -1,11 +1,11 @@
 import * as bcrypt from 'bcrypt';
-import { AppDataSource } from '../core/database';
+import { AppDataSource } from '../core/connection/database';
 import { User } from '../users/users.schema';
 import { ROUNDS_NUMBER } from '../core/constant';
 import { Config } from '../core/config';
 import { LoginInput, LoginResponse, RegisterInput } from './auth.schema';
 import { signJwt } from '../core/utils/jwt';
-import { BadRequest, Unauthorized } from '../core/utils/errors.util';
+import { AuthenticationError, UserInputError } from 'apollo-server-core';
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(User);
@@ -16,7 +16,7 @@ export class AuthService {
     });
 
     if (duplicatedUser) {
-      throw new BadRequest('Email already existed');
+      throw new UserInputError('Email already existed');
     }
     const newUser = new User(registerInput);
 
@@ -35,13 +35,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Unauthorized('Email or password invalid');
+      throw new AuthenticationError('Email or password invalid');
     }
 
     const isValid = await bcrypt.compare(loginInput.password, user.hashedPassword);
 
     if (!isValid) {
-      throw new Unauthorized('Email or password is incorrect');
+      throw new AuthenticationError('Email or password is incorrect');
     }
 
     const payload = {

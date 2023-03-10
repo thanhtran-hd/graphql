@@ -1,5 +1,4 @@
-import { Args, FieldResolver, Query, Resolver, Root, UseMiddleware } from 'type-graphql';
-import { HandlerError } from '../core/middleware/handler-error.middleware';
+import { Args, FieldResolver, Query, Resolver, Root } from 'type-graphql';
 import { Voucher } from '../vouchers/vouchers.schema';
 import { User, UsersArgs } from './users.schema';
 import { UserService } from './users.service';
@@ -11,7 +10,6 @@ export class UserResolver {
   }
 
   @Query((_return) => [User])
-  @UseMiddleware(HandlerError)
   async users(@Args() args: UsersArgs) {
     const users = await this.userService.getUser(args);
     return users;

@@ -3,7 +3,7 @@ import { Server } from 'http';
 import dotenv from 'dotenv';
 dotenv.config();
 import { createApp } from './app';
-import { AppDataSource } from './core/database';
+import { AppDataSource } from './core/connection/database';
 import { DataSource } from 'typeorm';
 import { Config } from './core/config';
 import { logger } from './core/utils/logger.util';
@@ -36,12 +36,13 @@ function gracefulShutdown(): void {
 
 async function bootstrap(): Promise<void> {
   datasource = await AppDataSource.initialize();
+  logger.info('Database is connect');
 
   const port = parseInt(process.env.SERVER_PORT || '3005', 10);
   const app = await createApp();
 
   server = app.listen(port, () => {
-    logger.info('Listening at port: ' + port);
+    logger.info(`Server is running, http://localhost:${port}/graphql`);
   });
 }
 

@@ -1,9 +1,8 @@
 import cors from 'cors';
-import express, { NextFunction, Express } from 'express';
-import { Request, Response } from 'express';
-import { HttpError, InternalServerError } from 'http-errors';
+import express, { Express } from 'express';
+import { KeyvAdapter } from '@apollo/utils.keyvadapter';
+import Keyv from 'keyv';
 import { Config } from './core/config';
-import { logger } from './core/utils/logger.util';
 import { buildSchema } from 'type-graphql';
 import { ApolloServer } from 'apollo-server-express';
 import {
@@ -11,14 +10,12 @@ import {
   ApolloServerPluginLandingPageProductionDefault,
 } from 'apollo-server-core';
 import { User } from './users/users.schema';
-import { AppDataSource } from './core/database';
 import { Context } from './types/context';
 import { verifyJwt } from './core/utils/jwt';
-import { authChecker } from './core/auth_checker';
+import { authChecker } from './core/helper/auth_checker';
+import { ErrorInterceptor } from './core/middleware/handler-error.middleware';
 
 export async function createApp(): Promise<Express> {
-  await AppDataSource.initialize();
-  logger.info('Database is connect');
   const app = express();
 
   app.use(cors(Config.CORS_OPTIONS));
@@ -26,6 +23,7 @@ export async function createApp(): Promise<Express> {
   const schema = await buildSchema({
     resolvers: [__dirname + '/**/*.resolver.{ts,js}'],
     authChecker,
+    globalMiddlewares: [ErrorInterceptor],
   });
 
   const server = new ApolloServer({
@@ -39,6 +37,8 @@ export async function createApp(): Promise<Express> {
       }
       return ctx;
     },
+    persistedQueries: false,
+    cache: new KeyvAdapter(new Keyv(Config.REDIS_CACHE_URI)),
     plugins: [
       Config.NODE_ENV === 'production'
         ? ApolloServerPluginLandingPageProductionDefault
@@ -50,24 +50,5 @@ export async function createApp(): Promise<Express> {
   await server.start();
   server.applyMiddleware({ app });
 
-  app.listen(3001, () => {
-    logger.info(`Server is running, http://localhost:3001/graphql`);
-  });
-
-  //Error handler
-  app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
-    logger.error(error);
-    if (error instanceof HttpError) {
-      if (error instanceof InternalServerError) {
-        logger.error(error);
-      }
-      return res.status(error.statusCode).send({ error: error.message, details: error.details });
-    }
-    logger.error(error);
-    return res.status(500).send({ error: 'Internal Server Error' });
-  });
-
   return app;
 }
-
-createApp();
