@@ -26,7 +26,7 @@ export class VoucherService {
     return vouchers as Voucher[];
   }
 
-  async create(input: CreateVoucherInput, user: User) {
+  async create(input: CreateVoucherInput, user: User): Promise<Voucher> {
     const code = otpGenerator.generate(12);
 
     const newVoucher = new Voucher({ eventId: input.eventId, code, userId: user.id });

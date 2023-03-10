@@ -12,25 +12,11 @@ export class VoucherResolver {
 
   @Authorized()
   @Mutation((_return) => Voucher)
-  async createVoucher(@Arg('input') input: CreateVoucherInput, @Ctx() context: Context) {
+  async createVoucher(@Arg('input') input: CreateVoucherInput, @Ctx() context: Context): Promise<Voucher> {
     const newVoucher = await this.voucherService.create(input, context.user);
-
     return newVoucher;
   }
 }
-
-// @Resolver((_of) => Event)
-// export class VouchersOfEvent {
-//   constructor(private voucherService: VoucherService) {
-//     this.voucherService = new VoucherService();
-//   }
-
-//   @FieldResolver()
-//   async vouchers(@Root() event: Event) {
-//     const vouchers = await this.voucherService.getVouchersField<Event>(event);
-//     return vouchers;
-//   }
-// }
 
 @Resolver((_of) => User)
 export class VoucherOfUser {
@@ -39,7 +25,7 @@ export class VoucherOfUser {
   }
 
   @FieldResolver()
-  async vouchers(@Root() user: User) {
+  async vouchers(@Root() user: User): Promise<Voucher[]> {
     const vouchers = await this.voucherService.getVouchersField<User>(user);
     return vouchers;
   }

@@ -2,7 +2,7 @@ import { Job } from 'bullmq';
 import { logger } from '../../core/utils/logger.util';
 import { sendEmail } from '../../core/utils/send-email.util';
 
-export const sendCodeVoucherProcessor = async (job: Job) => {
+export const sendCodeVoucherProcessor = async (job: Job): Promise<void> => {
   logger.info(`Sent email attemp: ${job.attemptsMade}`);
 
   await sendEmail({

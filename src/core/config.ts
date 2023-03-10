@@ -109,24 +109,24 @@ export class Config {
     return parseInt((process.env.COOKIE_ACCESSTOKEN_MAX_AGE || '123') as string, 10);
   }
 
-  static get BULLMQ_QUEUES() {
+  static get BULLMQ_QUEUES(): string[] {
     const queues = (process.env.BULLMQ_QUEUES || ('' as string)).split('|');
     return queues;
   }
 
-  static get REDIS_HOST() {
+  static get REDIS_HOST(): string {
     return (process.env.REDIS_HOST || 'localhost') as string;
   }
 
-  static get REDIS_PORT() {
+  static get REDIS_PORT(): number {
     return parseInt((process.env.REDIS_PORT || 6379) as string, 10);
   }
 
-  static get REDIS_DB() {
+  static get REDIS_DB(): number {
     return parseInt((process.env.REDIS_DB || 0) as string, 10);
   }
 
-  static get REDIS_CACHE_URI() {
+  static get REDIS_CACHE_URI(): string {
     return (process.env.REDIS_CACHE_URI || 'redis://user:pass@localhost:6379') as string;
   }
 }

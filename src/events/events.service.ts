@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server-core';
+import { ApolloError, UserInputError } from 'apollo-server-core';
 import { LessThan, MoreThan } from 'typeorm';
 import { AppDataSource } from '../core/connection/database';
 import { EDIT_EXP_TIME } from '../core/constant';
@@ -37,7 +37,7 @@ export class EventService {
     await this.eventRepo.increment({ id: eventId, quantity: MoreThan(0) }, 'quantity', 1);
   }
 
-  async edit({ eventId }: EditorInput, user: User): Promise<Editor | null> {
+  async edit({ eventId }: EditorInput, user: User): Promise<Editor> {
     const editExpireTimeMs = EDIT_EXP_TIME * 1000;
 
     await AppDataSource.manager.transaction(async (transactionalEntityManager) => {
@@ -62,6 +62,9 @@ export class EventService {
     });
 
     const result = await AppDataSource.manager.findOne(Editor, { where: { eventId } });
+    if (!result) {
+      throw new UserInputError('Event not found ');
+    }
     return result;
   }
 

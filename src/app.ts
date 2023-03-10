@@ -28,7 +28,7 @@ export async function createApp(): Promise<Express> {
 
   const server = new ApolloServer({
     schema,
-    context: (ctx: Context) => {
+    context: (ctx: Context): Context => {
       if (ctx.req.headers?.authorization) {
         const user = verifyJwt<User>(ctx.req.headers?.authorization, Config.JWT_SECRET_KEY);
         if (user) {
